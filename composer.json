@@ -1,0 +1,29 @@
+{
+    "name": "fsavina/hermes",
+    "description": "An automatic Laravel deploy system via Git on SSH",
+    "license": "MIT",
+    "support": {
+        "issues": "https://github.com/fsavina/hermes/issues",
+        "source": "https://github.com/fsavina/hermes"
+    },
+    "authors": [
+        {
+            "name": "Fabio Savina",
+            "email": "fabio.savina@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.6.4",
+        "illuminate/console": "5.3.*",
+        "laravelcollective/remote": "5.3.*"
+    },
+    "require-dev": {
+        "mockery/mockery": "~0.9.4",
+        "phpunit/phpunit": "~5.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "Hermes\\": "src/"
+        }
+    }
+}
