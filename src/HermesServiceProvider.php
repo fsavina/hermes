@@ -17,7 +17,7 @@ class HermesServiceProvider extends ServiceProvider
 	public function register ()
 	{
 		$this->commands ( [
-							  Commands\Setup::class,
+							  //Commands\Setup::class,
 							  Commands\Deploy::class
 						  ] );
 	}
