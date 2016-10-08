@@ -8,6 +8,9 @@ use Illuminate\Support\ServiceProvider;
 
 class HermesServiceProvider extends ServiceProvider
 {
+
+	protected $defer = true;
+
 	
 	public function boot ()
 	{
@@ -35,10 +38,9 @@ class HermesServiceProvider extends ServiceProvider
 	
 	protected function registerRoutineDriver ()
 	{
-		$this->app->singleton ( 'hermes.driver', function ( $app )
+		$this->app->singleton ( 'hermes.routine', function ( $app )
 		{
-			$manager = $app[ 'hermes' ];
-			return $manager->driver ();
+			return $app[ 'hermes' ]->driver ();
 		} );
 	}
 	
@@ -50,4 +52,11 @@ class HermesServiceProvider extends ServiceProvider
 							  Commands\Deploy::class
 						  ] );
 	}
+
+
+	public function provides ()
+	{
+		return [ 'hermes', 'hermes.routine' ];
+	}
+
 }

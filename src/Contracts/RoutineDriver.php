@@ -20,6 +20,14 @@ interface RoutineDriver
 	
 	
 	/**
+	 * @param string   $task
+	 * @param \Closure $callback
+	 * @return RoutineDriver
+	 */
+	public function extend ( $task, \Closure $callback );
+	
+	
+	/**
 	 * @param string|array $task
 	 * @return RoutineDriver
 	 */

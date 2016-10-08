@@ -19,6 +19,11 @@ abstract class AbstractDriver implements RoutineDriver
 	 */
 	protected $commands = [ ];
 	
+	/**
+	 * @var array
+	 */
+	protected $customTasks = [ ];
+	
 	
 	/**
 	 * @param string $root
@@ -49,14 +54,25 @@ abstract class AbstractDriver implements RoutineDriver
 	
 	
 	/**
-	 * @param string $task
-	 * @return string
+	 * @param string   $task
+	 * @param \Closure $callback
+	 * @return RoutineDriver
 	 */
-	protected function resolveTask ( $task )
+	public function extend ( $task, \Closure $callback )
 	{
-		$method = 'task' . Str::studly ( str_replace ( [ ':', '-' ], '_', $task ) );
+		$this->customTasks[ $task ] = $callback;
 		
-		return method_exists ( $this, $method ) ? $method : null;
+		return $this;
+	}
+	
+	
+	/**
+	 * @param string $task
+	 * @return RoutineDriver
+	 */
+	protected function callCustomTask ( $task )
+	{
+		return $this->customTasks[ $task ]( $this );
 	}
 	
 	
@@ -69,7 +85,12 @@ abstract class AbstractDriver implements RoutineDriver
 		$tasks = (array) $task;
 		foreach ( $tasks as $task )
 		{
-			if ( $method = $this->resolveTask ( $task ) )
+			$method = 'run' . Str::studly ( str_replace ( [ ':', '-' ], '_', $task ) ) . 'Task';
+			
+			if ( isset( $this->customTasks[ $task ] ) )
+			{
+				$this->callCustomTask ( $task );
+			} elseif ( method_exists ( $this, $method ) )
 			{
 				$this->$method();
 			}

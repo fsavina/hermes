@@ -41,7 +41,7 @@ class Deploy extends AbstractCommand
 		$remote = $this->argument ( 'remote' );
 		$branch = $this->argument ( 'branch' );
 
-		$this->routine = $this->laravel[ 'hermes.driver' ];
+		$this->routine = $this->laravel[ 'hermes.routine' ];
 
 		if ( $this->isGroup ( $remote ) )
 		{
@@ -72,18 +72,6 @@ class Deploy extends AbstractCommand
 		}
 		
 		return true;
-	}
-	
-	
-	/**
-	 * @return \Closure
-	 */
-	protected function writer ()
-	{
-		return function ( $line )
-		{
-			$this->info ( $line );
-		};
 	}
 	
 	
@@ -145,7 +133,10 @@ class Deploy extends AbstractCommand
 	protected function runRoutine ( $remote, RoutineDriver $procedure )
 	{
 		$this->ssh->into ( $remote )
-				  ->run ( $procedure->all (), $this->writer () );
+				  ->run ( $procedure->all (), function ( $line )
+				  {
+					  $this->info ( $line );
+				  } );
 	}
 	
 }

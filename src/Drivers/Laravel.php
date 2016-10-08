@@ -33,7 +33,7 @@ class Laravel extends AbstractDriver
 	/**
 	 * @return Laravel
 	 */
-	protected function taskComposerInstall ()
+	protected function runComposerInstallTask ()
 	{
 		return $this->command ( 'composer install --no-interaction' );
 	}
@@ -42,7 +42,7 @@ class Laravel extends AbstractDriver
 	/**
 	 * @return Laravel
 	 */
-	protected function taskMigrate ()
+	protected function runMigrateTask ()
 	{
 		return $this->artisanCommand ( 'migrate --force' );
 	}
@@ -51,7 +51,7 @@ class Laravel extends AbstractDriver
 	/**
 	 * @return Laravel
 	 */
-	protected function taskConfigCache ()
+	protected function runConfigCacheTask ()
 	{
 		return $this->artisanCommand ( 'config:cache' );
 	}
@@ -60,7 +60,7 @@ class Laravel extends AbstractDriver
 	/**
 	 * @return Laravel
 	 */
-	protected function taskRouteCache ()
+	protected function runRouteCacheTask ()
 	{
 		return $this->artisanCommand ( 'route:cache' );
 	}
@@ -69,7 +69,7 @@ class Laravel extends AbstractDriver
 	/**
 	 * @return Laravel
 	 */
-	protected function taskCacheClear ()
+	protected function runCacheClearTask ()
 	{
 		return $this->artisanCommand ( 'cache:clear' );
 	}
@@ -78,7 +78,7 @@ class Laravel extends AbstractDriver
 	/**
 	 * @return Laravel
 	 */
-	protected function taskViewClear ()
+	protected function runViewClearTask ()
 	{
 		return $this->artisanCommand ( 'view:clear' );
 	}
