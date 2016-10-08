@@ -13,13 +13,16 @@ class Deploy extends AbstractCommand
 	 * The name and signature of the console command.
 	 * @var string
 	 */
-	protected $signature = 'hermes:deploy {server=stage} {branch=master} {--f|force}';
+	protected $signature = 'hermes:deploy
+							{remote : The remote to be deployed}
+							{branch=master : The branch to be deployed}
+							{--f|force : Skip security confirmation}';
 	
 	/**
 	 * The console command description.
 	 * @var string
 	 */
-	protected $description = 'Deploy command';
+	protected $description = 'Deploy the given branch to the given remote';
 	
 	
 	/**
@@ -28,8 +31,8 @@ class Deploy extends AbstractCommand
 	 */
 	public function handle ()
 	{
-		$server = $this->argument ( 'server' );
-		
+		$remote = $this->argument ( 'remote' );
+
 		$force = $this->option ( 'force' );
 
 		if ( ! $force and ! $this->confirm ( 'Do you wish to continue? [y|N]' ) )
@@ -37,18 +40,18 @@ class Deploy extends AbstractCommand
 			return false;
 		}
 		
-		if ( $this->isGroup ( $server ) )
+		if ( $this->isGroup ( $remote ) )
 		{
-			$this->info ( "Running deploy on group: {$server}" );
-			$servers = $this->resolveGroup ( $server );
+			$this->info ( "Running deploy on group: {$remote}" );
+			$remotes = $this->resolveGroup ( $remote );
 		} else
 		{
-			$servers = [ $server ];
+			$remotes = [ $remote ];
 		}
 		
-		foreach ( $servers as $server )
+		foreach ( $remotes as $remote )
 		{
-			$config = $this->getConfig ( $server );
+			$config = $this->getConfig ( $remote );
 
 			$branch = $this->argument ( 'branch' );
 
@@ -59,7 +62,7 @@ class Deploy extends AbstractCommand
 			$this->warn ( "Deploying branch '{$branch}' to remote path: {$config[ 'webroot' ]}" );
 			$procedure = $this->prepareProcedure ( $config );
 
-			$this->ssh->into ( $server )
+			$this->ssh->into ( $remote )
 					  ->run ( $procedure->commands (), $this->writer () );
 		}
 		
