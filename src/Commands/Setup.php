@@ -3,10 +3,7 @@
 namespace Hermes\Commands;
 
 
-use Illuminate\Console\Command;
-
-
-class Setup extends Command
+class Setup extends AbstractCommand
 {
 	
 	/**

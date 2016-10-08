@@ -3,7 +3,8 @@
 namespace Hermes\Commands;
 
 
-use Hermes\Procedures\Artisan;
+use Hermes\Managers\DeployManager;
+use Hermes\Managers\LaravelManager;
 
 
 class Deploy extends AbstractCommand
@@ -31,15 +32,16 @@ class Deploy extends AbstractCommand
 	 */
 	public function handle ()
 	{
-		$remote = $this->argument ( 'remote' );
-
 		$force = $this->option ( 'force' );
-
+		
 		if ( ! $force and ! $this->confirm ( 'Do you wish to continue? [y|N]' ) )
 		{
 			return false;
 		}
 		
+		$remote = $this->argument ( 'remote' );
+		$branch = $this->argument ( 'branch' );
+
 		if ( $this->isGroup ( $remote ) )
 		{
 			$this->info ( "Running deploy on group: {$remote}" );
@@ -52,24 +54,23 @@ class Deploy extends AbstractCommand
 		foreach ( $remotes as $remote )
 		{
 			$config = $this->getConfig ( $remote );
-
-			$branch = $this->argument ( 'branch' );
-
+			
 			$this->warn ( "Pushing branch '{$branch}' to remote: {$config[ 'remote' ]} ({$config['host']})" );
-
 			$this->gitPush ( $config[ 'remote' ], $branch );
-
-			$this->warn ( "Deploying branch '{$branch}' to remote path: {$config[ 'webroot' ]}" );
+			
+			$this->warn ( "Deploying branch '{$branch}' to remote path: {$config[ 'root' ]}" );
 			$procedure = $this->prepareProcedure ( $config );
 
-			$this->ssh->into ( $remote )
-					  ->run ( $procedure->commands (), $this->writer () );
+			$this->runProcedure ( $remote, $procedure );
 		}
 		
 		return true;
 	}
-
-
+	
+	
+	/**
+	 * @return \Closure
+	 */
 	protected function writer ()
 	{
 		return function ( $line )
@@ -78,7 +79,7 @@ class Deploy extends AbstractCommand
 		};
 	}
 	
-
+	
 	/**
 	 * @param string $remote
 	 * @param string $branch
@@ -91,37 +92,33 @@ class Deploy extends AbstractCommand
 
 
 	/**
-	 * @param array $config
-	 * @return Artisan
+	 * @param $config
+	 * @return LaravelManager
 	 */
-	protected function prepareProcedure ( array $config )
+	protected function prepareProcedure ( $config )
 	{
-		return ( new Artisan( $config[ 'webroot' ] ) )
-			->whileOnMaintenance ( function ( Artisan $procedure )
+		return ( new LaravelManager( $config[ 'root' ] ) )
+			->whileOnMaintenance ( function ( LaravelManager $procedure ) use ( $config )
 			{
-				$procedure
-					->onRoot ()
-					->gitPull ( $this->argument ( 'branch' ) )
-					->composerInstall ()
-					->bowerInstall ()
-					->migrate ()
-					->clearCache ();
+				$procedure->onRoot ()->gitPull ( $this->argument ( 'branch' ) );
 
-				$procedure
-					->setPermissions ( 'bootstrap/cache', 775 )
-					->setPermissions ( [
-										   'app',
-										   'config',
-										   'resources',
-										   'public/assets/vendor',
-										   'public/build',
-										   'public/images',
-										   'routes',
-										   'vendor'
-									   ], 755 );
+				$tasks =
+					( isset( $config[ 'tasks' ] ) and is_array ( $config[ 'tasks' ] ) )
+						? $config[ 'tasks' ] : [ ];
+				$procedure->pushTask ( $tasks );
 
-				$procedure->on ( 'vendor/finnegan/cds' )->gitIgnoreFileMode ();
+				$commands =
+					( isset( $config[ 'commands' ] ) and is_array ( $config[ 'commands' ] ) )
+						? $config[ 'commands' ] : [ ];
+				$procedure->pushCommand ( $commands );
 			} );
+	}
+
+
+	protected function runProcedure ( $remote, DeployManager $procedure )
+	{
+		$this->ssh->into ( $remote )
+				  ->run ( $procedure->commands (), $this->writer () );
 	}
 	
 }
