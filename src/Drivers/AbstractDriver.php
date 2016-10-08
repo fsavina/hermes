@@ -1,11 +1,12 @@
 <?php
-namespace Hermes\Managers;
+namespace Hermes\Drivers;
 
 
+use Hermes\Contracts\RoutineDriver;
 use Illuminate\Support\Str;
 
 
-abstract class DeployManager
+abstract class AbstractDriver implements RoutineDriver
 {
 	
 	/**
@@ -18,26 +19,23 @@ abstract class DeployManager
 	 */
 	protected $commands = [ ];
 	
-	/**
-	 * @var array
-	 */
-	protected $tasks = [ ];
-	
 	
 	/**
 	 * @param string $root
+	 * @return AbstractDriver
 	 */
-	public function __construct ( $root )
+	public function setRoot ( $root )
 	{
 		$this->root = $root;
+		return $this;
 	}
 	
 	
 	/**
 	 * @param string|array $command
-	 * @return DeployManager
+	 * @return AbstractDriver
 	 */
-	public function pushCommand ( $command )
+	public function command ( $command )
 	{
 		if ( is_array ( $command ) )
 		{
@@ -64,9 +62,9 @@ abstract class DeployManager
 	
 	/**
 	 * @param string|array $task
-	 * @return DeployManager
+	 * @return AbstractDriver
 	 */
-	public function pushTask ( $task )
+	public function task ( $task )
 	{
 		$tasks = (array) $task;
 		foreach ( $tasks as $task )
@@ -83,50 +81,42 @@ abstract class DeployManager
 	/**
 	 * @return array
 	 */
-	public function commands ()
+	public function all ()
 	{
 		return $this->commands;
 	}
 	
 	
 	/**
-	 * @return DeployManager
+	 * @return AbstractDriver
 	 */
 	public function reset ()
 	{
+		$this->root = null;
 		$this->commands = [ ];
 		return $this;
 	}
 	
 	
 	/**
-	 * @param string $path
-	 * @return DeployManager
-	 */
-	public function on ( $path )
-	{
-		$path = ( substr ( $path, 0, 1 ) == '/' ) ? $path : "{$this->root}/{$path}";
-		return $this->pushCommand ( "cd {$path}" );
-	}
-	
-	
-	/**
-	 * @return DeployManager
-	 */
-	public function onRoot ()
-	{
-		return $this->on ( $this->root );
-	}
-	
-	
-	/**
 	 * @param string $branch
 	 * @param string $remote
-	 * @return DeployManager
+	 * @return AbstractDriver
 	 */
-	public function gitPull ( $branch = 'master', $remote = 'origin' )
+	public function pull ( $branch = 'master', $remote = 'origin' )
 	{
-		return $this->pushCommand ( "git pull $remote $branch" );
+		return $this->on ( $this->root )->command ( "git pull $remote $branch" );
+	}
+	
+	
+	/**
+	 * @param string $path
+	 * @return AbstractDriver
+	 */
+	protected function on ( $path )
+	{
+		$path = ( substr ( $path, 0, 1 ) == '/' ) ? $path : "{$this->root}/{$path}";
+		return $this->command ( "cd {$path}" );
 	}
 	
 }

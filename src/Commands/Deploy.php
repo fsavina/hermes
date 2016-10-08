@@ -3,8 +3,7 @@
 namespace Hermes\Commands;
 
 
-use Hermes\Managers\DeployManager;
-use Hermes\Managers\LaravelManager;
+use Hermes\Contracts\RoutineDriver;
 
 
 class Deploy extends AbstractCommand
@@ -24,6 +23,11 @@ class Deploy extends AbstractCommand
 	 * @var string
 	 */
 	protected $description = 'Deploy the given branch to the given remote';
+
+	/**
+	 * @var RoutineDriver
+	 */
+	protected $routine;
 	
 	
 	/**
@@ -33,14 +37,11 @@ class Deploy extends AbstractCommand
 	public function handle ()
 	{
 		$force = $this->option ( 'force' );
-		
-		if ( ! $force and ! $this->confirm ( 'Do you wish to continue? [y|N]' ) )
-		{
-			return false;
-		}
-		
+
 		$remote = $this->argument ( 'remote' );
 		$branch = $this->argument ( 'branch' );
+
+		$this->routine = $this->laravel[ 'hermes.driver' ];
 
 		if ( $this->isGroup ( $remote ) )
 		{
@@ -55,13 +56,19 @@ class Deploy extends AbstractCommand
 		{
 			$config = $this->getConfig ( $remote );
 			
-			$this->warn ( "Pushing branch '{$branch}' to remote: {$config[ 'remote' ]} ({$config['host']})" );
-			$this->gitPush ( $config[ 'remote' ], $branch );
+			$this->warn ( "Pushing branch '{$branch}' to remote: {$config[ 'remote' ]} ({$config['host']}, {$config['root']})" );
+
+			if ( ! $force and ! $this->confirm ( 'Do you wish to continue? [y|N]' ) )
+			{
+				continue;
+			}
+
+			$this->push ( $config[ 'remote' ], $branch );
 			
 			$this->warn ( "Deploying branch '{$branch}' to remote path: {$config[ 'root' ]}" );
-			$procedure = $this->prepareProcedure ( $config );
+			$this->prepareRoutine ( $config );
 
-			$this->runProcedure ( $remote, $procedure );
+			$this->runRoutine ( $remote, $this->routine );
 		}
 		
 		return true;
@@ -84,7 +91,7 @@ class Deploy extends AbstractCommand
 	 * @param string $remote
 	 * @param string $branch
 	 */
-	protected function gitPush ( $remote, $branch = 'master' )
+	protected function push ( $remote, $branch = 'master' )
 	{
 		$path = base_path ();
 		exec ( "git -C {$path} push {$remote} {$branch}" );
@@ -93,32 +100,52 @@ class Deploy extends AbstractCommand
 
 	/**
 	 * @param $config
-	 * @return LaravelManager
+	 * @return RoutineDriver
 	 */
-	protected function prepareProcedure ( $config )
+	protected function prepareRoutine ( $config )
 	{
-		return ( new LaravelManager( $config[ 'root' ] ) )
-			->whileOnMaintenance ( function ( LaravelManager $procedure ) use ( $config )
+		return $this->routine
+			->reset ()
+			->setRoot ( $config[ 'root' ] )
+			->inMaintenance ( function ( RoutineDriver $procedure ) use ( $config )
 			{
-				$procedure->onRoot ()->gitPull ( $this->argument ( 'branch' ) );
+				$procedure->pull ( $this->argument ( 'branch' ) );
 
-				$tasks =
-					( isset( $config[ 'tasks' ] ) and is_array ( $config[ 'tasks' ] ) )
-						? $config[ 'tasks' ] : [ ];
-				$procedure->pushTask ( $tasks );
+				$procedure->task ( $this->tasks ( $config ) );
 
-				$commands =
-					( isset( $config[ 'commands' ] ) and is_array ( $config[ 'commands' ] ) )
-						? $config[ 'commands' ] : [ ];
-				$procedure->pushCommand ( $commands );
+				$procedure->command ( $this->commands ( $config ) );
 			} );
 	}
 
 
-	protected function runProcedure ( $remote, DeployManager $procedure )
+	/**
+	 * @param array $config
+	 * @return array
+	 */
+	protected function tasks ( $config )
+	{
+		return ( isset( $config[ 'tasks' ] ) and is_array ( $config[ 'tasks' ] ) ) ? $config[ 'tasks' ] : [ ];
+	}
+
+
+	/**
+	 * @param array $config
+	 * @return array
+	 */
+	protected function commands ( $config )
+	{
+		return ( isset( $config[ 'commands' ] ) and is_array ( $config[ 'commands' ] ) ) ? $config[ 'commands' ] : [ ];
+	}
+
+
+	/**
+	 * @param string        $remote
+	 * @param RoutineDriver $procedure
+	 */
+	protected function runRoutine ( $remote, RoutineDriver $procedure )
 	{
 		$this->ssh->into ( $remote )
-				  ->run ( $procedure->commands (), $this->writer () );
+				  ->run ( $procedure->all (), $this->writer () );
 	}
 	
 }
