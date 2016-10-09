@@ -3,14 +3,13 @@
 namespace Hermes;
 
 
+use Collective\Remote\RemoteServiceProvider;
 use Illuminate\Support\ServiceProvider;
 
 
 class HermesServiceProvider extends ServiceProvider
 {
-
-	protected $defer = true;
-
+	
 	
 	public function boot ()
 	{
@@ -19,11 +18,19 @@ class HermesServiceProvider extends ServiceProvider
 	
 	public function register ()
 	{
+		$this->registerRemoteProvider ();
+		
 		$this->registerRoutineManager ();
 		
 		$this->registerRoutineDriver ();
 		
 		$this->registerCommands ();
+	}
+	
+	
+	protected function registerRemoteProvider ()
+	{
+		$this->app->register ( RemoteServiceProvider::class );
 	}
 	
 	
@@ -53,11 +60,11 @@ class HermesServiceProvider extends ServiceProvider
 							  Commands\Task::class
 						  ] );
 	}
-
-
+	
+	
 	public function provides ()
 	{
 		return [ 'hermes', 'hermes.routine' ];
 	}
-
+	
 }
