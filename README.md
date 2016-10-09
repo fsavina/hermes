@@ -52,12 +52,12 @@ Add the **Service Provider** to the list of providers in your `config/app.php`:
     // ...
     Hermes\HermesServiceProvider::class,
     // ...
-  ],
+],
 ```
 
 and complete the installation publishing the `laravelcollective/remote` package default configuration file:
 ```shell
-    php artisan vendor:publish --provider="Collective\Remote\RemoteServiceProvider"
+php artisan vendor:publish --provider="Collective\Remote\RemoteServiceProvider"
 ```
 
 
