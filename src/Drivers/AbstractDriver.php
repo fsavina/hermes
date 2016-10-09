@@ -140,4 +140,30 @@ abstract class AbstractDriver implements RoutineDriver
 		return $this->command ( "cd {$path}" );
 	}
 	
+	
+	/**
+	 * @param \Closure $callback
+	 * @return AbstractDriver
+	 */
+	public function inMaintenance ( \Closure $callback )
+	{
+		$this->down ();
+		
+		$callback( $this );
+		
+		return $this->up ();
+	}
+	
+	
+	/**
+	 * @return AbstractDriver
+	 */
+	abstract protected function down ();
+	
+	
+	/**
+	 * @return AbstractDriver
+	 */
+	abstract protected function up ();
+	
 }

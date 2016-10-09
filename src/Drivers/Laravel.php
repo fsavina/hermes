@@ -17,20 +17,6 @@ class Laravel extends AbstractDriver
 
 
 	/**
-	 * @param \Closure $callback
-	 * @return Laravel
-	 */
-	public function inMaintenance ( \Closure $callback )
-	{
-		$this->artisanCommand ( 'down' );
-
-		$callback( $this );
-
-		return $this->artisanCommand ( 'up' );
-	}
-
-
-	/**
 	 * @return Laravel
 	 */
 	protected function runComposerInstallTask ()
@@ -83,4 +69,21 @@ class Laravel extends AbstractDriver
 		return $this->artisanCommand ( 'view:clear' );
 	}
 	
+	
+	/**
+	 * @return Laravel
+	 */
+	protected function down ()
+	{
+		return $this->artisanCommand ( 'down' );
+	}
+	
+	
+	/**
+	 * @return Laravel
+	 */
+	protected function up ()
+	{
+		return $this->artisanCommand ( 'up' );
+	}
 }
