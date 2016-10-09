@@ -47,6 +47,10 @@ class Setup extends AbstractCommand
 					  $this->info ( $line );
 				  } );
 
+		$path = base_path ();
+		$remoteUrl = "ssh://{$config['username']}@{$config['host']}{$config['repository']}";
+		exec ( "git -C {$path} remote add {$remote} {$remoteUrl}" );
+
 		return true;
 	}
 	
