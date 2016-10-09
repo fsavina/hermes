@@ -60,4 +60,10 @@ interface RoutineDriver
 	 */
 	public function pull ( $branch = 'master', $remote = 'origin' );
 	
+	
+	/**
+	 * @return array
+	 */
+	public function provides ();
+	
 }

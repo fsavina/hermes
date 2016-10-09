@@ -46,9 +46,27 @@ class Laravel extends AbstractDriver
 	/**
 	 * @return Laravel
 	 */
+	protected function runConfigClearTask ()
+	{
+		return $this->artisanCommand ( 'config:clear' );
+	}
+
+
+	/**
+	 * @return Laravel
+	 */
 	protected function runRouteCacheTask ()
 	{
 		return $this->artisanCommand ( 'route:cache' );
+	}
+
+
+	/**
+	 * @return Laravel
+	 */
+	protected function runRouteClearTask ()
+	{
+		return $this->artisanCommand ( 'route:clear' );
 	}
 
 
@@ -67,6 +85,33 @@ class Laravel extends AbstractDriver
 	protected function runViewClearTask ()
 	{
 		return $this->artisanCommand ( 'view:clear' );
+	}
+
+
+	/**
+	 * @return Laravel
+	 */
+	protected function runOptimizeTask ()
+	{
+		return $this->artisanCommand ( 'optimize' );
+	}
+
+
+	/**
+	 * @return Laravel
+	 */
+	protected function runClearCompiledTask ()
+	{
+		return $this->artisanCommand ( 'clear-compiled' );
+	}
+
+
+	/**
+	 * @return Laravel
+	 */
+	protected function runStorageLinkTask ()
+	{
+		return $this->artisanCommand ( 'storage:link' );
 	}
 	
 	

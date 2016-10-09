@@ -48,8 +48,9 @@ class HermesServiceProvider extends ServiceProvider
 	protected function registerCommands ()
 	{
 		$this->commands ( [
+							  Commands\Deploy::class,
 							  Commands\Setup::class,
-							  Commands\Deploy::class
+							  Commands\Task::class
 						  ] );
 	}
 

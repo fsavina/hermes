@@ -102,6 +102,31 @@ abstract class AbstractDriver implements RoutineDriver
 	/**
 	 * @return array
 	 */
+	final public function provides ()
+	{
+		$tasks = [ ];
+		foreach ( get_class_methods ( $this ) as $method )
+		{
+			if ( Str::startsWith ( $method, 'run' ) and Str::endsWith ( $method, 'Task' ) )
+			{
+				$task = Str::snake ( Str::substr ( $method, 3, -4 ) );
+				array_push ( $tasks, str_replace ( '_', ':', $task ) );
+			}
+		}
+		sort ( $tasks );
+
+		if ( count ( $this->customTasks ) )
+		{
+			$tasks = array_merge ( $tasks, array_keys ( $this->customTasks ) );
+		}
+		
+		return $tasks;
+	}
+	
+	
+	/**
+	 * @return array
+	 */
 	public function all ()
 	{
 		return $this->commands;
