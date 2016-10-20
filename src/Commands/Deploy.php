@@ -14,7 +14,7 @@ class Deploy extends AbstractCommand
 	 * @var string
 	 */
 	protected $signature = 'hermes:deploy
-							{remote : The remote to be deployed}
+							{remote? : The remote to be deployed}
 							{branch=master : The branch to be deployed}
 							{--f|force : Skip security confirmation}';
 	
@@ -23,7 +23,7 @@ class Deploy extends AbstractCommand
 	 * @var string
 	 */
 	protected $description = 'Deploy the given branch to the given remote';
-
+	
 	/**
 	 * @var RoutineDriver
 	 */
@@ -37,12 +37,18 @@ class Deploy extends AbstractCommand
 	public function handle ()
 	{
 		$force = $this->option ( 'force' );
-
+		
 		$remote = $this->argument ( 'remote' );
+		
+		if ( is_null ( $remote ) )
+		{
+			$remote = $this->choice ( 'Which remote do you wish to deploy to?', $this->remotes () );
+		}
+		
 		$branch = $this->argument ( 'branch' );
-
+		
 		$this->routine = $this->laravel[ 'hermes.routine' ];
-
+		
 		if ( $this->isGroup ( $remote ) )
 		{
 			$this->info ( "Running deploy on group: {$remote}" );
@@ -57,17 +63,17 @@ class Deploy extends AbstractCommand
 			$config = $this->getConfig ( $remote );
 			
 			$this->warn ( "Pushing branch '{$branch}' to remote: {$config[ 'remote' ]} ({$config['host']}, {$config['root']})" );
-
+			
 			if ( ! $force and ! $this->confirm ( 'Do you wish to continue? [y|N]' ) )
 			{
 				continue;
 			}
-
+			
 			$this->push ( $config[ 'remote' ], $branch );
 			
 			$this->warn ( "Deploying branch '{$branch}' to remote path: {$config[ 'root' ]}" );
 			$this->prepareRoutine ( $config );
-
+			
 			$this->runRoutine ( $remote, $this->routine );
 		}
 		
@@ -84,8 +90,8 @@ class Deploy extends AbstractCommand
 		$path = base_path ();
 		exec ( "git -C {$path} push {$remote} {$branch}" );
 	}
-
-
+	
+	
 	/**
 	 * @param $config
 	 * @return RoutineDriver
@@ -98,14 +104,14 @@ class Deploy extends AbstractCommand
 			->inMaintenance ( function ( RoutineDriver $procedure ) use ( $config )
 			{
 				$procedure->pull ( $this->argument ( 'branch' ) );
-
+				
 				$procedure->task ( $this->tasks ( $config ) );
-
+				
 				$procedure->command ( $this->commands ( $config ) );
 			} );
 	}
-
-
+	
+	
 	/**
 	 * @param array $config
 	 * @return array
@@ -114,8 +120,8 @@ class Deploy extends AbstractCommand
 	{
 		return ( isset( $config[ 'tasks' ] ) and is_array ( $config[ 'tasks' ] ) ) ? $config[ 'tasks' ] : [ ];
 	}
-
-
+	
+	
 	/**
 	 * @param array $config
 	 * @return array
@@ -124,8 +130,8 @@ class Deploy extends AbstractCommand
 	{
 		return ( isset( $config[ 'commands' ] ) and is_array ( $config[ 'commands' ] ) ) ? $config[ 'commands' ] : [ ];
 	}
-
-
+	
+	
 	/**
 	 * @param string        $remote
 	 * @param RoutineDriver $procedure

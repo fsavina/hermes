@@ -11,7 +11,6 @@ use Illuminate\Contracts\Config\Repository as ConfigContract;
 class AbstractCommand extends Command
 {
 	
-	
 	/**
 	 * @var RemoteManager
 	 */
@@ -37,21 +36,49 @@ class AbstractCommand extends Command
 	}
 	
 	
-	protected function getConfig ( $server )
+	/**
+	 * @param string $remote
+	 * @return array
+	 */
+	protected function getConfig ( $remote )
 	{
-		return $this->config->get ( "remote.connections.$server" );
+		return $this->config->get ( "remote.connections.$remote" );
 	}
 	
 	
-	protected function isGroup ( $server )
+	/**
+	 * @param string $group
+	 * @return bool
+	 */
+	protected function isGroup ( $group )
 	{
-		return $this->config->has ( "remote.groups.$server" );
+		return $this->config->has ( "remote.groups.$group" );
 	}
 	
 	
-	protected function resolveGroup ( $server )
+	/**
+	 * @param string $group
+	 * @return array
+	 */
+	protected function resolveGroup ( $group )
 	{
-		return (array) $this->config->get ( "remote.groups.$server" );
+		return (array) $this->config->get ( "remote.groups.$group" );
+	}
+	
+	
+	/**
+	 * @return array
+	 */
+	protected function remotes ()
+	{
+		$remotes = array_keys ( $this->config->get ( 'remote.connections' ) );
+		
+		foreach ( $this->config->get ( 'remote.groups' ) as $group => $groupRemotes )
+		{
+			array_push ( $remotes, "$group ==> " . implode ( ', ', $groupRemotes ) );
+		}
+		
+		return $remotes;
 	}
 	
 }
