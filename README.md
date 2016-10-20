@@ -111,12 +111,16 @@ Use the `setup` command to automatically setup both the local and the remote env
 php artisan hermes:setup stage
 ```
 
+> **Note:** run the Setup command without the remote name to see a list of the available remotes/groups.
+
 <a name="deploy-command"></a>
 ### Deploy
 The `deploy` commands transfers the project to the given remote server and runs the configured list of tasks and commands.
 ```shell
 php artisan hermes:deploy stage
 ```
+
+> **Note:** run the Deploy command without the remote name to see a list of the available remotes/groups.
 
 <a name="task-command"></a>
 ### Task
