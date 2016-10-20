@@ -1,7 +1,7 @@
 {
     "name": "fsavina/hermes",
-    "description": "An automatic PHP deploy system via Git on SSH",
-    "keywords": ["php", "deploy", "git", "ssh", "laravel"],
+    "description": "An automated PHP deploy and remote tasks system via Git on SSH",
+    "keywords": ["php", "deploy", "git", "ssh", "laravel", "tasks", "remote"],
     "license": "MIT",
     "support": {
         "issues": "https://github.com/fsavina/hermes/issues",
@@ -21,8 +21,6 @@
         "laravelcollective/remote": "5.3.*"
     },
     "require-dev": {
-        "mockery/mockery": "~0.9.4",
-        "phpunit/phpunit": "~5.4"
     },
     "autoload": {
         "psr-4": {
