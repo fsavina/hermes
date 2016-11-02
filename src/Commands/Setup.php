@@ -34,17 +34,18 @@ class Setup extends AbstractCommand
 		}
 		
 		$config = $this->getConfig ( $remote );
+		$sudo = ( isset( $config[ 'sudo' ] ) and $config[ 'sudo' ] ) ? 'sudo ' : '';
 		
 		$commands = [ ];
 		
-		array_push ( $commands, "mkdir -p {$config['repository']}" );
+		array_push ( $commands, "{$sudo}mkdir -p {$config['repository']}" );
 		array_push ( $commands, "cd {$config['repository']}" );
-		array_push ( $commands, "git init --bare" );
+		array_push ( $commands, "{$sudo}git init --bare" );
 		
-		array_push ( $commands, "mkdir -p {$config['root']}" );
+		array_push ( $commands, "{$sudo}mkdir -p {$config['root']}" );
 		array_push ( $commands, "cd {$config['root']}" );
-		array_push ( $commands, "git init" );
-		array_push ( $commands, "git remote add origin {$config['repository']}" );
+		array_push ( $commands, "{$sudo}git init" );
+		array_push ( $commands, "{$sudo}git remote add origin {$config['repository']}" );
 		
 		$this->ssh->into ( $remote )
 				  ->run ( $commands, function ( $line )

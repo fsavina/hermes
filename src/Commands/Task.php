@@ -37,17 +37,17 @@ class Task extends AbstractCommand
 	public function handle ()
 	{
 		$force = $this->option ( 'force' );
-
+		
 		$remote = $this->argument ( 'remote' );
 		$task = $this->argument ( 'task' );
-
+		
 		$this->routine = $this->laravel[ 'hermes.routine' ];
-
+		
 		if ( is_null ( $task ) )
 		{
 			$task = $this->choice ( 'Which task do you wish to execute?', $this->routine->provides () );
 		}
-
+		
 		if ( $this->isGroup ( $remote ) )
 		{
 			$this->info ( "Running task '{$task}' on group: {$remote}" );
@@ -68,7 +68,15 @@ class Task extends AbstractCommand
 				continue;
 			}
 			
-			$this->routine->reset ()->setRoot ( $config[ 'root' ] )->task ( $task );
+			$this->routine->reset ()
+						  ->setRoot ( $config[ 'root' ] );
+			
+			if ( isset( $config[ 'sudo' ] ) and $config[ 'sudo' ] )
+			{
+				$this->routine->sudo ();
+			}
+			
+			$this->routine->task ( $task );
 			
 			if ( ! count ( $commands = $this->routine->all () ) )
 			{

@@ -13,6 +13,12 @@ interface RoutineDriver
 	
 	
 	/**
+	 * @return RoutineDriver
+	 */
+	public function sudo ();
+	
+	
+	/**
 	 * @param string|array $command
 	 * @return RoutineDriver
 	 */

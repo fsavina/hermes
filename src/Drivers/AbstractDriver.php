@@ -15,6 +15,11 @@ abstract class AbstractDriver implements RoutineDriver
 	protected $root;
 	
 	/**
+	 * @var bool
+	 */
+	protected $sudo = false;
+	
+	/**
 	 * @var array
 	 */
 	protected $commands = [ ];
@@ -37,18 +42,34 @@ abstract class AbstractDriver implements RoutineDriver
 	
 	
 	/**
-	 * @param string|array $command
 	 * @return AbstractDriver
 	 */
-	public function command ( $command )
+	public function sudo ()
 	{
-		if ( is_array ( $command ) )
+		$this->sudo = true;
+		return $this;
+	}
+	
+	
+	/**
+	 * @param string|array $commands
+	 * @return AbstractDriver
+	 */
+	public function command ( $commands )
+	{
+		if ( is_array ( $commands ) )
 		{
-			$this->commands = array_merge ( $this->commands, $command );
-		} else
-		{
-			array_push ( $this->commands, $command );
+			foreach ( $commands as $command )
+			{
+				$this->command ( $command );
+			}
+			return $this;
 		}
+		
+		$command = ( $this->sudo ? 'sudo ' : '' ) . $commands;
+		
+		array_push ( $this->commands, $command );
+		
 		return $this;
 	}
 	
@@ -114,7 +135,7 @@ abstract class AbstractDriver implements RoutineDriver
 			}
 		}
 		sort ( $tasks );
-
+		
 		if ( count ( $this->customTasks ) )
 		{
 			$tasks = array_merge ( $tasks, array_keys ( $this->customTasks ) );
@@ -139,6 +160,7 @@ abstract class AbstractDriver implements RoutineDriver
 	public function reset ()
 	{
 		$this->root = null;
+		$this->sudo = false;
 		$this->commands = [ ];
 		return $this;
 	}
@@ -151,7 +173,8 @@ abstract class AbstractDriver implements RoutineDriver
 	 */
 	public function pull ( $branch = 'master', $remote = 'origin' )
 	{
-		return $this->on ( $this->root )->command ( "git pull $remote $branch" );
+		return $this->on ( $this->root )
+					->command ( "git pull $remote $branch" );
 	}
 	
 	
@@ -162,7 +185,10 @@ abstract class AbstractDriver implements RoutineDriver
 	protected function on ( $path )
 	{
 		$path = ( substr ( $path, 0, 1 ) == '/' ) ? $path : "{$this->root}/{$path}";
-		return $this->command ( "cd {$path}" );
+		
+		array_push ( $this->commands, "cd {$path}" );
+		
+		return $this;
 	}
 	
 	

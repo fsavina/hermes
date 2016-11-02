@@ -37,7 +37,7 @@ First of all, add this package to your project via Composer. Require the package
 
 ```json
 "require-dev": {
-    "fsavina/hermes" : "1.0.*"
+    "fsavina/hermes" : "1.1.*"
 }
 ```
 
@@ -76,6 +76,7 @@ In order to automatically deploy your code to a remote server you need to set th
     'remote'     => 'stage',
     'root'       => '/path/to/project/root',
     'repository' => '/path/to/remote/repository.git',
+    'sudo'       => true,
     'tasks'      => ['composer:install', 'cache:clear'],
     'commands'   => [
         'mkdir /some/dir/foo/bar'
@@ -86,9 +87,11 @@ In order to automatically deploy your code to a remote server you need to set th
 The `remote` value is the name of a local Git remote pointing to the remote `repository` on the target server. It can be
 either an existing remote or it can be created via the [`setup command`](#setup-command).
 
+The `root` value is the complete path to the target folder for your project on the remote server.
+
 The `repository` value is the complete path to the gateway Git repository on the remote server.
 
-The `root` value is complete path to the target folder for your project on the remote server.
+The `sudo` value forces the tasks and the commands to be run with super user privileges on the remote server.
 
 The `tasks` array is the list of built-in or custom tasks that you want to execute every time that the code si transfered
 to the remote server (eg. install new packages, clean up the cache).

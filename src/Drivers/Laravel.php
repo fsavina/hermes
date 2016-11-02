@@ -28,6 +28,24 @@ class Laravel extends AbstractDriver
 	/**
 	 * @return Laravel
 	 */
+	protected function runGulpTask ()
+	{
+		return $this->command ( 'gulp' );
+	}
+
+
+	/**
+	 * @return Laravel
+	 */
+	protected function runGulpProductionTask ()
+	{
+		return $this->command ( 'gulp --production' );
+	}
+
+
+	/**
+	 * @return Laravel
+	 */
 	protected function runMigrateTask ()
 	{
 		return $this->artisanCommand ( 'migrate --force' );
