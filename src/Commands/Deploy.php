@@ -73,14 +73,14 @@ class Deploy extends AbstractCommand
 			
 			$this->warn ( "Deploying branch '{$branch}' to remote path: {$config[ 'root' ]}" );
 			$this->prepareRoutine ( $config );
-			
+
 			$this->runRoutine ( $remote, $this->routine );
 		}
-		
+
 		return true;
 	}
-	
-	
+
+
 	/**
 	 * @param string $remote
 	 * @param string $branch
@@ -90,30 +90,31 @@ class Deploy extends AbstractCommand
 		$path = base_path ();
 		exec ( "git -C {$path} push {$remote} {$branch}" );
 	}
-	
-	
+
+
 	/**
 	 * @param $config
 	 * @return RoutineDriver
 	 */
 	protected function prepareRoutine ( $config )
 	{
-		return $this->routine
+		$this->routine
 			->reset ()
-			->setRoot ( $config[ 'root' ] )
-			->inMaintenance ( function ( RoutineDriver $procedure ) use ( $config )
-			{
-				if ( isset( $config[ 'sudo' ] ) and $config[ 'sudo' ] )
-				{
-					$procedure->sudo ();
-				}
-				
-				$procedure->pull ( $this->argument ( 'branch' ) );
-				
-				$procedure->task ( $this->tasks ( $config ) );
-				
-				$procedure->command ( $this->commands ( $config ) );
-			} );
+			->setRoot ( $config[ 'root' ] );
+
+		if ( isset( $config[ 'sudo' ] ) and $config[ 'sudo' ] )
+		{
+			$this->routine->sudo ();
+		}
+
+		return $this->routine->inMaintenance ( function ( RoutineDriver $procedure ) use ( $config )
+		{
+			$procedure->pull ( $this->argument ( 'branch' ) );
+
+			$procedure->task ( $this->tasks ( $config ) );
+
+			$procedure->command ( $this->commands ( $config ) );
+		} );
 	}
 	
 	
