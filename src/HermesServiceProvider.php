@@ -13,6 +13,10 @@ class HermesServiceProvider extends ServiceProvider
 	
 	public function boot ()
 	{
+		if ( $this->app->runningInConsole () )
+		{
+			$this->registerCommands ();
+		}
 	}
 	
 	
@@ -23,8 +27,6 @@ class HermesServiceProvider extends ServiceProvider
 		$this->registerRoutineManager ();
 		
 		$this->registerRoutineDriver ();
-		
-		$this->registerCommands ();
 	}
 	
 	
