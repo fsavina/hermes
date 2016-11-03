@@ -1,7 +1,7 @@
 <?php
 
 
-class LaravelDriverTest extends DriverTestCase
+class LaravelDriverTest extends TestCaseDriver
 {
 
 	public function testBuiltInTasks ()

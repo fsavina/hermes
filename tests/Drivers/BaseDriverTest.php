@@ -3,7 +3,7 @@
 use Hermes\Drivers\AbstractDriver;
 
 
-class BaseDriverTest extends DriverTestCase
+class BaseDriverTest extends TestCaseDriver
 {
 	
 	

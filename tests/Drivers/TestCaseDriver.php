@@ -4,7 +4,7 @@ use Hermes\Drivers\AbstractDriver;
 use Hermes\Drivers\RoutineManager;
 
 
-class DriverTestCase extends PHPUnit_Framework_TestCase
+abstract class TestCaseDriver extends PHPUnit_Framework_TestCase
 {
 	
 	/**
@@ -20,6 +20,8 @@ class DriverTestCase extends PHPUnit_Framework_TestCase
 	
 	public function setUp ()
 	{
+		parent::setUp();
+		
 		$this->manager = new RoutineManager( null );
 		$this->routine = $this->manager->driver ();
 	}
