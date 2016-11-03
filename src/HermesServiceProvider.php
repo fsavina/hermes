@@ -38,7 +38,7 @@ class HermesServiceProvider extends ServiceProvider
 	{
 		$this->app->singleton ( 'hermes', function ( $app )
 		{
-			return new RoutineManager( $app );
+			return new Drivers\RoutineManager( $app );
 		} );
 	}
 	

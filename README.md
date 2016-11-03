@@ -132,7 +132,7 @@ The `task` commands runs a single task on the given remote server.
 php artisan hermes:task stage cache:clear
 ```
 
-> **Note:** run the Task command without the task name to see a list of the available tasks.
+> **Note:** run the Task command without the remote or task name to see a list of the available options.
 
 <a name="tasks"></a>
 ## Built-in Tasks
@@ -141,16 +141,20 @@ The Hermes package comes with a built-in **Routine Driver** optimized for [Larav
 A routine driver is a list of common task that can be executed on a remote server.
 
 The built-in Laravel routine driver provides the following tasks:
-- composer:install
 - cache:clear
 - clear:compiled
+- composer:install
 - config:cache
 - config:clear
+- down
+- gulp
+- gulp:production
 - migrate
 - optimize
 - route:cache
 - route:clear
 - storage:link
+- up
 - view:clear
 
 <a name="extending-hermes"></a>
