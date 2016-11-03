@@ -198,23 +198,23 @@ abstract class AbstractDriver implements RoutineDriver
 	 */
 	public function inMaintenance ( \Closure $callback )
 	{
-		$this->down ();
+		$this->runDownTask ();
 		
 		$callback( $this );
 		
-		return $this->up ();
+		return $this->runUpTask ();
 	}
 	
 	
 	/**
 	 * @return AbstractDriver
 	 */
-	abstract protected function down ();
+	abstract protected function runDownTask ();
 	
 	
 	/**
 	 * @return AbstractDriver
 	 */
-	abstract protected function up ();
+	abstract protected function runUpTask ();
 	
 }

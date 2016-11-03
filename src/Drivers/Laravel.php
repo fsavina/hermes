@@ -14,35 +14,38 @@ class Laravel extends AbstractDriver
 	{
 		return $this->command ( "php {$this->root}/artisan {$command}" );
 	}
-
-
+	
+	
 	/**
 	 * @return Laravel
 	 */
 	protected function runComposerInstallTask ()
 	{
-		return $this->command ( 'composer install --no-interaction' );
+		return $this->on ( $this->root )
+					->command ( 'composer install --no-interaction' );
 	}
-
-
+	
+	
 	/**
 	 * @return Laravel
 	 */
 	protected function runGulpTask ()
 	{
-		return $this->command ( 'gulp' );
+		return $this->on ( $this->root )
+					->command ( 'gulp' );
 	}
-
-
+	
+	
 	/**
 	 * @return Laravel
 	 */
 	protected function runGulpProductionTask ()
 	{
-		return $this->command ( 'gulp --production' );
+		return $this->on ( $this->root )
+					->command ( 'gulp --production' );
 	}
-
-
+	
+	
 	/**
 	 * @return Laravel
 	 */
@@ -50,8 +53,8 @@ class Laravel extends AbstractDriver
 	{
 		return $this->artisanCommand ( 'migrate --force' );
 	}
-
-
+	
+	
 	/**
 	 * @return Laravel
 	 */
@@ -59,8 +62,8 @@ class Laravel extends AbstractDriver
 	{
 		return $this->artisanCommand ( 'config:cache' );
 	}
-
-
+	
+	
 	/**
 	 * @return Laravel
 	 */
@@ -68,8 +71,8 @@ class Laravel extends AbstractDriver
 	{
 		return $this->artisanCommand ( 'config:clear' );
 	}
-
-
+	
+	
 	/**
 	 * @return Laravel
 	 */
@@ -77,8 +80,8 @@ class Laravel extends AbstractDriver
 	{
 		return $this->artisanCommand ( 'route:cache' );
 	}
-
-
+	
+	
 	/**
 	 * @return Laravel
 	 */
@@ -86,8 +89,8 @@ class Laravel extends AbstractDriver
 	{
 		return $this->artisanCommand ( 'route:clear' );
 	}
-
-
+	
+	
 	/**
 	 * @return Laravel
 	 */
@@ -95,8 +98,8 @@ class Laravel extends AbstractDriver
 	{
 		return $this->artisanCommand ( 'cache:clear' );
 	}
-
-
+	
+	
 	/**
 	 * @return Laravel
 	 */
@@ -104,8 +107,8 @@ class Laravel extends AbstractDriver
 	{
 		return $this->artisanCommand ( 'view:clear' );
 	}
-
-
+	
+	
 	/**
 	 * @return Laravel
 	 */
@@ -113,8 +116,8 @@ class Laravel extends AbstractDriver
 	{
 		return $this->artisanCommand ( 'optimize' );
 	}
-
-
+	
+	
 	/**
 	 * @return Laravel
 	 */
@@ -122,8 +125,8 @@ class Laravel extends AbstractDriver
 	{
 		return $this->artisanCommand ( 'clear-compiled' );
 	}
-
-
+	
+	
 	/**
 	 * @return Laravel
 	 */
@@ -136,7 +139,7 @@ class Laravel extends AbstractDriver
 	/**
 	 * @return Laravel
 	 */
-	protected function down ()
+	protected function runDownTask ()
 	{
 		return $this->artisanCommand ( 'down' );
 	}
@@ -145,8 +148,9 @@ class Laravel extends AbstractDriver
 	/**
 	 * @return Laravel
 	 */
-	protected function up ()
+	protected function runUpTask ()
 	{
 		return $this->artisanCommand ( 'up' );
 	}
+	
 }
