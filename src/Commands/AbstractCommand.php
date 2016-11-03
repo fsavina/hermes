@@ -68,17 +68,21 @@ class AbstractCommand extends Command
 	
 	
 	/**
+	 * @param bool $groups
 	 * @return array
 	 */
-	protected function remotes ()
+	protected function remotes ( $groups = true )
 	{
 		$remotes = array_keys ( $this->config->get ( 'remote.connections' ) );
-
-		foreach ( $this->config->get ( 'remote.groups' ) as $group => $groupRemotes )
+		
+		if ( $groups )
 		{
-			array_push ( $remotes, "*$group" );
+			foreach ( $this->config->get ( 'remote.groups' ) as $group => $groupRemotes )
+			{
+				array_push ( $remotes, "*$group" );
+			}
 		}
-
+		
 		return $remotes;
 	}
 	

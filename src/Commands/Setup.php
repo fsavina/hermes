@@ -30,7 +30,7 @@ class Setup extends AbstractCommand
 		
 		if ( is_null ( $remote ) )
 		{
-			$remote = $this->choice ( 'Which remote do you wish to setup?', $this->remotes () );
+			$remote = $this->choice ( 'Which remote do you wish to setup?', $this->remotes ( false ) );
 		}
 		
 		$config = $this->getConfig ( $remote );
