@@ -14,7 +14,7 @@ class Task extends AbstractCommand
 	 * @var string
 	 */
 	protected $signature = 'hermes:task
-							{remote : The target remote for the required task}
+							{remote? : The target remote for the required task}
 							{task? : The task to be executed}
 							{--f|force : Skip security confirmation}';
 	
@@ -39,15 +39,19 @@ class Task extends AbstractCommand
 		$force = $this->option ( 'force' );
 		
 		$remote = $this->argument ( 'remote' );
-		$task = $this->argument ( 'task' );
-		
+		if ( is_null ( $remote ) )
+		{
+			$remote = trim ( $this->choice ( 'Which remote do you wish to run the task on?', $this->remotes () ), '*' );
+		}
+
 		$this->routine = $this->laravel[ 'hermes.routine' ];
-		
+
+		$task = $this->argument ( 'task' );
 		if ( is_null ( $task ) )
 		{
 			$task = $this->choice ( 'Which task do you wish to execute?', $this->routine->provides () );
 		}
-		
+
 		if ( $this->isGroup ( $remote ) )
 		{
 			$this->info ( "Running task '{$task}' on group: {$remote}" );
